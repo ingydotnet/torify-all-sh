@@ -7,16 +7,16 @@ if [ -z "$DNSPORT" ]; then DNSPORT=5353; fi
 
 # The following rules will transparently Torify everything
 if [ "$1" = "start" ]; then
-    iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner $ANONUSER -m tcp -j REDIRECT --to-ports $TORTRANSPORT
-    iptables -t nat -A OUTPUT -p udp -m owner --uid-owner $ANONUSER -m udp --dport $DNSPORT -j REDIRECT --to-ports $DNSPORT
-    iptables -t filter -A OUTPUT -p tcp -m owner --uid-owner $ANONUSER -m tcp --dport $TORTRANSPORT -j ACCEPT
-    iptables -t filter -A OUTPUT -p udp -m owner --uid-owner $ANONUSER -m udp --dport $DNSPORT -j ACCEPT
-    iptables -t filter -A OUTPUT -m owner --uid-owner $ANONUSER -j DROP
+    sudo iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner $ANONUSER -m tcp -j REDIRECT --to-ports $TORTRANSPORT
+    sudo iptables -t nat -A OUTPUT -p udp -m owner --uid-owner $ANONUSER -m udp --dport $DNSPORT -j REDIRECT --to-ports $DNSPORT
+    sudo iptables -t filter -A OUTPUT -p tcp -m owner --uid-owner $ANONUSER -m tcp --dport $TORTRANSPORT -j ACCEPT
+    sudo iptables -t filter -A OUTPUT -p udp -m owner --uid-owner $ANONUSER -m udp --dport $DNSPORT -j ACCEPT
+    sudo iptables -t filter -A OUTPUT -m owner --uid-owner $ANONUSER -j DROP
 elif [ "$1" = "stop" ]; then
-    iptables -X -t nat 
-    iptables -F -t nat 
-    iptables -X
-    iptables -F
+    sudo iptables -X
+    sudo iptables -F
+    sudo iptables -X -t nat 
+    sudo iptables -F -t nat
 else
     echo 'Usage:'
     echo '       torify-all start'
