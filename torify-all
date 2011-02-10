@@ -1,0 +1,27 @@
+#!/bin/sh
+# This is a small script to ensure that a user always uses Tor to access the internet
+
+if [ -z "$ANONUSER" ]; then ANONUSER=$USER; fi
+if [ -z "$TORTRANSPORT" ]; then TORTRANSPORT=9040; fi
+if [ -z "$DNSPORT" ]; then DNSPORT=5353; fi
+
+# The following rules will transparently Torify everything
+if [ "$1" = "start" ]; then
+    iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner $ANONUSER -m tcp -j REDIRECT --to-ports $TORTRANSPORT
+    iptables -t nat -A OUTPUT -p udp -m owner --uid-owner $ANONUSER -m udp --dport $DNSPORT -j REDIRECT --to-ports $DNSPORT
+    iptables -t filter -A OUTPUT -p tcp -m owner --uid-owner $ANONUSER -m tcp --dport $TORTRANSPORT -j ACCEPT
+    iptables -t filter -A OUTPUT -p udp -m owner --uid-owner $ANONUSER -m udp --dport $DNSPORT -j ACCEPT
+    iptables -t filter -A OUTPUT -m owner --uid-owner $ANONUSER -j DROP
+elif [ "$1" = "stop" ]; then
+    iptables -X -t nat 
+    iptables -F -t nat 
+    iptables -X
+    iptables -F
+else
+    echo 'Usage:'
+    echo '       torify-all start'
+    echo '       torify-all stop'
+    exit 1
+fi
+
+exit 0;
