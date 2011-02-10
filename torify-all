@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 # This is a small script to ensure that a user always uses Tor to access the internet
 
 if [ -z "$ANONUSER" ]; then ANONUSER=$USER; fi
